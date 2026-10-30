@@ -1,0 +1,121 @@
+[
+  {
+    "version": "3.8",
+    "name": "boss1.json",
+    "jsonPath": "/home/z/my-project/download/spine-phase0/corpus/v3.8/boss1.json",
+    "atlasPath": "/home/z/my-project/download/spine-phase0/corpus/v3.8/boss1.atlas",
+    "stageA": {
+      "equal": true,
+      "diffCount": 0,
+      "diffs": [],
+      "truncated": false
+    },
+    "stageB": {
+      "equal": true,
+      "summary": "27 骨骼 / 12 槽位 / 1 皮肤 / 6 动画 / 约束 {\"ik\":2,\"transform\":0,\"path\":0,\"physics\":0}"
+    },
+    "error": null
+  },
+  {
+    "version": "3.8",
+    "name": "raptor-pro.json",
+    "jsonPath": "/home/z/my-project/download/spine-phase0/corpus/v3.8/raptor-pro.json",
+    "atlasPath": "/home/z/my-project/download/spine-phase0/corpus/v3.8/raptor-pro.atlas",
+    "stageA": {
+      "equal": true,
+      "diffCount": 0,
+      "diffs": [],
+      "truncated": false
+    },
+    "stageB": {
+      "equal": true,
+      "summary": "74 骨骼 / 36 槽位 / 1 皮肤 / 5 动画 / 约束 {\"ik\":9,\"transform\":0,\"path\":0,\"physics\":0}"
+    },
+    "error": null
+  },
+  {
+    "version": "3.8",
+    "name": "spineboy-ess.json",
+    "jsonPath": "/home/z/my-project/download/spine-phase0/corpus/v3.8/spineboy-ess.json",
+    "atlasPath": "/home/z/my-project/download/spine-phase0/corpus/v3.8/spineboy-ess.atlas",
+    "stageA": {
+      "equal": true,
+      "diffCount": 0,
+      "diffs": [],
+      "truncated": false
+    },
+    "stageB": {
+      "equal": true,
+      "summary": "18 骨骼 / 20 槽位 / 1 皮肤 / 7 动画 / 约束 {\"ik\":0,\"transform\":0,\"path\":0,\"physics\":0}"
+    },
+    "error": null
+  },
+  {
+    "version": "4.2",
+    "name": "Box.json",
+    "jsonPath": "/home/z/my-project/download/spine-phase0/corpus/v4.2/Box.json",
+    "atlasPath": "/home/z/my-project/download/spine-phase0/corpus/v4.2/Box.atlas",
+    "stageA": {
+      "equal": true,
+      "diffCount": 0,
+      "diffs": [],
+      "truncated": false
+    },
+    "stageB": {
+      "equal": true,
+      "summary": "46 骨骼 / 66 槽位 / 1 皮肤 / 4 动画 / 约束 {\"ik\":0,\"transform\":0,\"path\":0,\"physics\":0}"
+    },
+    "error": null
+  },
+  {
+    "version": "4.2",
+    "name": "celestial-circus-pro.json",
+    "jsonPath": "/home/z/my-project/download/spine-phase0/corpus/v4.2/celestial-circus-pro.json",
+    "atlasPath": "/home/z/my-project/download/spine-phase0/corpus/v4.2/celestial-circus-pro.atlas",
+    "stageA": {
+      "equal": true,
+      "diffCount": 0,
+      "diffs": [],
+      "truncated": false
+    },
+    "stageB": {
+      "equal": true,
+      "summary": "60 骨骼 / 70 槽位 / 1 皮肤 / 7 动画 / 约束 {\"ik\":0,\"transform\":3,\"path\":0,\"physics\":30}"
+    },
+    "error": null
+  },
+  {
+    "version": "4.2",
+    "name": "goblins-pro.json",
+    "jsonPath": "/home/z/my-project/download/spine-phase0/corpus/v4.2/goblins-pro.json",
+    "atlasPath": "/home/z/my-project/download/spine-phase0/corpus/v4.2/goblins-pro.atlas",
+    "stageA": {
+      "equal": true,
+      "diffCount": 0,
+      "diffs": [],
+      "truncated": false
+    },
+    "stageB": {
+      "equal": true,
+      "summary": "21 骨骼 / 23 槽位 / 3 皮肤 / 1 动画 / 约束 {\"ik\":0,\"transform\":0,\"path\":0,\"physics\":0}"
+    },
+    "error": null
+  },
+  {
+    "version": "4.2",
+    "name": "spineboy-pro.json",
+    "jsonPath": "/home/z/my-project/download/spine-phase0/corpus/v4.2/spineboy-pro.json",
+    "atlasPath": "/home/z/my-project/download/spine-phase0/corpus/v4.2/spineboy-pro.atlas",
+    "stageA": {
+      "equal": true,
+      "diffCount": 0,
+      "diffs": [],
+      "truncated": false
+    },
+    "stageB": {
+      "equal": true,
+      "summary": "67 骨骼 / 52 槽位 / 1 皮肤 / 11 动画 / 约束 {\"ik\":7,\"transform\":8,\"path\":0,\"physics\":0}"
+    },
+    "error": null
+  }
+]

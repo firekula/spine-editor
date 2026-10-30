@@ -1,0 +1,24 @@
+{
+  "name": "spine-editor-phase0",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Spine 浏览器编辑器 Phase 0：双版本(3.8/4.2) runtime 加载骨架 + .skel 二进制转 JSON + 金标准回环验证 harness",
+  "scripts": {
+    "build:runtimes": "node scripts/build-runtimes.mjs",
+    "test": "node src/harness/roundtrip.mjs && node src/harness/skel-roundtrip.mjs",
+    "test:a": "node src/harness/roundtrip.mjs --stage a",
+    "test:b": "node src/harness/roundtrip.mjs --stage b",
+    "test:skel": "node src/harness/skel-roundtrip.mjs",
+    "skel2json": "node src/cli/skel2json.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

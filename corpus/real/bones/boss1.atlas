@@ -1,0 +1,76 @@
+
+boss1.png
+size: 109,190
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: 180
+  xy: 3, 75
+  size: 89, 114
+  orig: 89, 114
+  offset: 0, 0
+  index: -1
+body00
+  rotate: false
+  xy: 3, 169
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+paper1
+  rotate: false
+  xy: 3, 169
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+hand1c
+  rotate: false
+  xy: 85, 167
+  size: 21, 21
+  orig: 21, 21
+  offset: 0, 0
+  index: -1
+hand2cc
+  rotate: false
+  xy: 85, 167
+  size: 21, 21
+  orig: 21, 21
+  offset: 0, 0
+  index: -1
+hand1cc
+  rotate: false
+  xy: 73, 5
+  size: 24, 24
+  orig: 24, 24
+  offset: 0, 0
+  index: -1
+leg1c
+  rotate: true
+  xy: 35, 4
+  size: 26, 37
+  orig: 26, 37
+  offset: 0, 0
+  index: -1
+necktie
+  rotate: false
+  xy: 3, 172
+  size: 3, 17
+  orig: 5, 25
+  offset: 1, 4
+  index: -1
+zuiba-bh
+  rotate: false
+  xy: 36, 31
+  size: 57, 47
+  orig: 57, 47
+  offset: 0, 0
+  index: -1
+zuoyanjing-bh
+  rotate: true
+  xy: 3, 10
+  size: 63, 30
+  orig: 63, 30
+  offset: 0, 0
+  index: -1
