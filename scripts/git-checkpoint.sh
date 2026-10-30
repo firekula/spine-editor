@@ -6,7 +6,7 @@ set -euo pipefail
 PROJ="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO="$(git -C "$PROJ" rev-parse --show-toplevel)"
 MSG="${1:-checkpoint $(date +%F_%H:%M)}"
-BUNDLE="$REPO/download/spine-phase0.bundle"
+BUNDLE="$REPO/../spine-phase0.bundle"  # 仓库根上一级(平台 download 目录)
 
 cd "$REPO"
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
