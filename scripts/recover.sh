@@ -85,6 +85,21 @@ TIP
 fi
 
 step "完成。下一步"
+# 恢复后若 SSH 可用，从 GitHub 快进到远程最新（远程是权威源，bundle 可能落后）
+if [ -f "$HOME/.ssh/id_ed25519" ]; then
+  echo "尝试从 GitHub 快进 dev ..."
+  if git fetch origin 2>/dev/null; then
+    if git merge --ff-only refs/remotes/origin/dev 2>/dev/null; then
+      echo "已快进到 origin/dev: $(git log --oneline -1)"
+    else
+      echo "本地与远程分叉，请人工检查（git log dev..origin/dev）"
+    fi
+    git push origin dev 2>/dev/null && echo "推送成功（密钥仍有效）" || \
+      echo "推送失败：多半是密钥被重置，需重新登记公钥（见上方）"
+  else
+    echo "fetch 失败：密钥大概率已被重置，需重新登记公钥（见上方）"
+  fi
+fi
 cat <<'EOF'
   公钥登记好后推送:   git push -u origin dev
   日常提交+备份:      bash scripts/git-checkpoint.sh "提交说明"

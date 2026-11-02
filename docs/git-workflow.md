@@ -75,3 +75,14 @@ git push -u origin dev
 - tag：`phase0`、`p1-viewport`……每个里程碑一个；
 - `corpus/`（语料）与 `vendor/`（官方 runtime 源码）都入库——恢复时一步到位；
 - `node_modules/`、`*.bundle`、`*.log` 不入库。
+
+## 2026-11-02 第三次重置实录（重要教训）
+
+- 重置不只发生在**消息边界**，本轮发生在**工作中途**（Import Data 预检刚跑完、
+  checkpoint 之前）：外层平台仓库被重置到平台自己的 main（UUID 快照提交），
+  嵌套 `.git`、`~/.ssh`、`~/.venv` 全被清；
+- **工作文件零丢失**：平台仓库跟踪 `download/` 普通文件，未提交的
+  harness 源码与文档全部幸存，`recover.sh` 一条命令恢复仓库后直接继续提交；
+- 教训：**做完一段工作立刻 checkpoint + push**，不要攒；
+- recover.sh 已升级：恢复后自动 fetch origin 快进（GitHub 远程是权威源，
+  bundle 可能落后于已推送的提交）。
