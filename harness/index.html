@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spine 编辑器 · Phase 1 视口</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header id="topbar">
+  <div class="brand">Spine 编辑器 <span class="sub">Phase 1 · 视口</span></div>
+  <div class="version-badge" id="versionBadge" hidden></div>
+  <div class="spacer"></div>
+  <div class="quick" id="quickLoad">
+    <span class="label">语料：</span>
+    <button data-asset="v3.8/boss1" data-pma="0">boss1 <small>3.8</small></button>
+    <button data-asset="v4.2/Box" data-pma="1">Box <small>4.2</small></button>
+    <button data-asset="v3.8/raptor-pro" data-pma="1">raptor <small>3.8</small></button>
+    <button data-asset="v4.2/goblins-pro" data-pma="1">goblins <small>4.2</small></button>
+    <button data-asset="v4.2/celestial-circus-pro" data-pma="1">circus <small>4.2</small></button>
+  </div>
+  <label class="file-btn">打开本地文件…
+    <input type="file" id="fileInput" multiple accept=".json,.atlas,.png,.jpg" hidden>
+  </label>
+</header>
+
+<main>
+  <div id="stage">
+    <canvas id="canvas"></canvas>
+    <div id="dropHint">拖入 .json + .atlas + .png（同名三件套）</div>
+    <div id="hud" hidden>
+      <span id="hudName"></span>
+      <span id="hudStats"></span>
+      <span id="hudTime"></span>
+    </div>
+    <div id="errorBox" hidden></div>
+  </div>
+  <aside id="panel">
+    <section>
+      <h3>动画</h3>
+      <select id="animSelect" disabled></select>
+      <div class="row">
+        <button id="playBtn" disabled>暂停</button>
+        <label class="chk"><input type="checkbox" id="loopChk" checked> 循环</label>
+      </div>
+      <div class="row">
+        <label class="sld">速度 <input type="range" id="speedSld" min="0.1" max="2" step="0.1" value="1"> <span id="speedVal">1.0×</span></label>
+      </div>
+    </section>
+    <section>
+      <h3>皮肤</h3>
+      <select id="skinSelect" disabled></select>
+    </section>
+    <section>
+      <h3>显示</h3>
+      <label class="chk"><input type="checkbox" id="debugChk"> 骨骼调试线</label>
+      <label class="chk"><input type="checkbox" id="pmaChk"> 预乘 alpha（PMA）</label>
+      <div class="row">
+        <button id="resetCamBtn">重置视角</button>
+      </div>
+      <p class="tip">滚轮缩放（围绕指针）· 左键拖拽平移</p>
+    </section>
+    <section>
+      <h3>骨架信息</h3>
+      <dl id="skeletonInfo"><dd>尚未加载</dd></dl>
+    </section>
+  </aside>
+</main>
+
+<script type="module" src="app.mjs"></script>
+</body>
+</html>

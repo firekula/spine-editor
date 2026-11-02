@@ -1,15 +1,21 @@
-# Spine 浏览器编辑器 · Phase 0 验证套件
+# Spine 浏览器编辑器 · Phase 0 验证套件 + Phase 1 视口
 
-团队内部工具（局域网部署，已持有官方正版许可）。本包是整个项目的第一块基石：
+团队内部工具（局域网部署，已持有官方正版许可）。当前包含两块：
 
-1. **双版本 runtime 加载骨架**——官方 spine-ts 核心（3.8.99 与 4.2.22）以 Node 可用的
-   ESM bundle 形式内置，纯数据加载（无需浏览器/WebGL）；
-2. **金标准回环 harness**——`解析 → AST → 序列化 → 与官方导出逐字段比对 → 双加载语义比对`
-   的自动化验收闭环。
+0. **Phase 0 验证套件（基石）**：
+   1. **双版本 runtime 加载骨架**——官方 spine-ts 核心（3.8.99 与 4.2.120）以 Node 可用的
+      ESM bundle 形式内置，纯数据加载（无需浏览器/WebGL）；
+   2. **金标准回环 harness**——`解析 → AST → 序列化 → 与官方导出逐字段比对 → 双加载语义比对`
+      的自动化验收闭环；
+   3. **Import Data 机器预检**——官方编辑器导入前的全量门禁验证（结构/atlas/网格/曲线/
+      运行时/nonessential 盘点）；
+1. **Phase 1 视口**——浏览器 WebGL 骨架渲染：双版本 runtime 动态加载、版本自动检测、
+   动画播放、皮肤切换、骨骼调试线、平移缩放。
 
 > Phase 0 回答的问题："自己写的 AST + 序列化器，能不能产出与官方导出
 > 语义完全一致、且能被对应版本官方 runtime 与官方编辑器（Import Data）接受的 JSON？"
-> 当前答案：**能。5 份官方导出 + 2 份团队真实项目（.skel 二进制直转）全绿。**
+> 当前答案：**能。5 份官方导出 + 2 份团队真实项目（.skel 二进制直转）全绿，
+> Import Data 机器预检 0 error。**
 
 ## 快速开始
 
@@ -40,6 +46,7 @@ PASS Box.skel [4.2.43] checks=15027 diffs=0 curveDiffs=29 noise=151 warnings=47
 npm run test:a      # 仅 Stage A（结构回环，纯 Node 零依赖）
 npm run test:b      # 仅 Stage B（双版本 runtime 语义加载）
 npm run test:skel   # .skel 二进制 → JSON 的金标准验证（见下节）
+npm run test:importdata   # Import Data 机器预检（金标准+回环产物双路全量门禁）
 node src/harness/roundtrip.mjs -v          # 显示全部差异明细
 node src/harness/roundtrip.mjs --stage a   # 等价 test:a
 # 单文件转换（日常把 .skel 扔进工具链的入口）
@@ -49,6 +56,35 @@ npm install && npm run build:runtimes
 ```
 
 机器可读报告输出到 `build/roundtrip-report.json`（CI 可直接消费，退出码 0/1）。
+
+## Phase 1 视口（浏览器渲染）
+
+```bash
+node scripts/serve.mjs 8090        # 零依赖静态服务器
+# 打开 http://localhost:8090/harness/ （或 ?asset=v4.2/Box 直接加载）
+
+bash scripts/visual-check.sh       # 无头浏览器视觉回归（截图存 build/visual/）
+```
+
+功能：语料快捷加载 / 本地文件拖入（json+atlas+png 三件套）→ 版本自动检测
+（读 `skeleton.spine`）→ 对应 runtime bundle 动态加载 → WebGL 渲染。
+动画下拉+播放/暂停+循环+速度、皮肤切换、骨骼调试线、PMA 开关、
+滚轮围绕指针缩放、左键平移、R 重置视角。
+
+关键实现事实（后续编辑功能直接依赖）：
+
+- 两个 runtime bundle 同页共存：3.8 拼接产物的顶层 `var spine` 收敛在 ESM
+  模块作用域内，与 4.2 平铺导出不冲突；
+- 3.8 的 GL 类在 `spine.webgl.*`，4.2 平铺在 `spine.*`；渲染循环分叉点仅三处：
+  4.2 需 `skeleton.update(dt)`、`updateWorldTransform(spine.Physics.update)`，
+  3.8 无参；ResizeMode 枚举位置不同；
+- 骨骼调试线用官方 `SceneRenderer.drawSkeletonDebug()`（两版同名同签名，
+  内置 debug renderer，无需自建）；
+- 视觉回归截图见 `build/visual/`（boss1 3.8.99 与 Box 4.2.43 实测渲染成功，
+  动画时间推进、调试线像素级验证通过）。
+
+另：平台沙箱的文件读取存在按文件抖动，`scripts/serve.mjs --preload`
+（启动时全量同步读进内存后纯内存服务）可完全绕开——视觉验证脚本已默认使用。
 
 ## 两阶段判定标准
 
@@ -99,26 +135,32 @@ Stage A 保证"编辑器写回的数据一个字段都不丢"；Stage B 保证"�
 
 ```
 spine-phase0/
-├── corpus/                  # 金标准语料库（按大版本分目录）
+├── corpus/                  # 金标准语料库（按大版本分目录，平铺同名三件套）
 │   ├── v3.8/                #   官方示例 + 团队真实项目（boss1，来自 .skel 直转）
 │   ├── v4.2/                #   官方示例 + 团队真实项目（Box，来自 .skel 直转）
 │   └── real/                #   原始 .skel + .atlas/.png 进料（转换源）
-├── vendor/                  # 官方 spine-ts 核心源码（来自 spine-runtimes 官方仓库）
-│   ├── spine-core-3.8/      #   3.8 分支 spine-ts/core（命名空间风格）
-│   └── spine-core-4.2/      #   4.2 分支 spine-ts/spine-core（ESM 风格）
-├── build/                   # runtime bundle 产物 + 回环报告（已内置，可重建）
+├── vendor/                  # 官方 spine-ts 源码（来自 spine-runtimes 官方仓库）
+│   ├── spine-core-3.8/      #   3.8 分支 spine-ts/core（命名空间风格，3.8.99 冻结）
+│   ├── spine-core-4.2/      #   4.2 分支 spine-ts/spine-core（ESM，4.2.120）
+│   ├── spine-webgl-3.8/     #   3.8 分支 spine-ts/webgl（module spine.webgl 命名空间）
+│   └── spine-webgl-4.2/     #   4.2 分支 spine-ts/spine-webgl（ESM，@esotericsoftware 包名依赖）
+├── build/                   # runtime bundle 产物（4 个）+ 回环报告 + visual/ 视觉回归截图
+├── harness/                 # Phase 1 视口页面（index.html + app.css + app.mjs）
 ├── src/
 │   ├── ast/parse.mjs        # JSON → AST（Phase 0：无损普通对象树）
 │   ├── ast/serialize.mjs    # AST → JSON（版本感知；字段顺序表 + 无损写回）
 │   ├── skel/skel2json.mjs   # .skel 二进制 → JSON（3.8/4.2 双布局，官方字段名）
 │   ├── diff/deep-diff.mjs   # 归一化深度比较（数组有序/字典无序/数值严格相等）
-│   ├── load/runtime.mjs     # 双版本 runtime 懒加载 + 纯数据加载 + 语义指纹
+│   ├── load/runtime.mjs     # 双版本 runtime 懒加载 + 纯数据加载 + atlas 解析 + 语义指纹
 │   ├── cli/skel2json.mjs    # 单文件转换 CLI（日常进料入口）
 │   └── harness/
 │       ├── roundtrip.mjs    # JSON 语料回环 harness
-│       └── skel-roundtrip.mjs # .skel 金标准验证（双路 SkeletonData 深度对比）
-├── scripts/build-runtimes.mjs # esbuild 打包双版本 runtime
-└── docs/import-data-checklist.md  # 官方编辑器 Import Data 装机验证清单（交给主画师）
+│       ├── skel-roundtrip.mjs # .skel 金标准验证（双路 SkeletonData 深度对比）
+│       └── import-data.mjs  # Import Data 机器预检（8 门全量验证）
+├── scripts/build-runtimes.mjs # esbuild 打包 4 个 runtime bundle（node/webgl × 3.8/4.2）
+├── scripts/serve.mjs        # 零依赖静态服务器（--preload 内存预载抗存储抖动）
+├── scripts/visual-check.sh  # 无头浏览器视觉回归（服务器+浏览器+截图一键）
+└── docs/                    # import-data-checklist / git-workflow / corpus-intake
 ```
 
 ## 如何扩充语料（重要）
@@ -172,11 +214,11 @@ drawOrder           [ { time, offsets: [ {slot, offset} ] } ]
 默认值折叠          首 key 省略 "time":0；setup 值字段整体省略（key 为 {}）
 ```
 
-## 下一步（Phase 1）
+## 下一步（Phase 2）
 
-- fork 官方 spine-player / 基于 `SceneRenderer` 搭视口，接 `loadSkeletonData`；
-- 视口选骨骼、拖拽摆姿态（`bone.worldToLocal` + FK/IK），`animation.apply()` 逐帧回放；
-- 把 pass-through AST 升级为可编辑文档模型（先做骨骼与关键帧），每次变更过 harness 回归。
+- 视口内选骨骼（点击拾取）、拖拽摆姿态（`bone.worldToLocal` + FK/IK）；
+- 关键帧时间轴、曲线编辑器（数据落回 AST，每次变更过 harness 回归）；
+- Import Data 的 GUI 实测结论回填后，冻结"回官方工程"的导出路径。
 
-配套的装机验证清单见 `docs/import-data-checklist.md`——**请在写第一个编辑功能之前
-完成该清单**，它决定"动画修改回官方工程"走哪条导入路径。
+配套的装机验证清单见 `docs/import-data-checklist.md`（机器可验证部分已全部通过，
+GUI 三路径实测待主画师回填）。
