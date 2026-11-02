@@ -90,3 +90,36 @@ node -e '
       但编辑器自己的解析器应当读取——此项实测确认）；
 - [ ] Box 存在数字名骨头/槽位（如 `"3"`）：导入后树形面板顺序与导出前是否一致
       （JSON 对象数字键会被重排，编辑器如按骨骼数组顺序展示则无影响）。
+
+## F. 机器预检结果（2026-11-02 已执行，工具：src/harness/import-data.mjs）
+
+不启动官方 GUI，对 Import Data 的可机器化前置条件做全量验证：
+结构引用完整性、atlas 区名可达（含 sequence 帧路径）、网格数组自洽、
+曲线键合法（含 4.2 多分量 4×N 扁平数组）、官方 spine-core 双版本全量加载、
+nonessential 编辑数据盘点。每个语料跑两遍（金标准 + 回环产物）并要求
+运行时语义指纹一致。
+
+| 语料 | 版本 | 金标准 | 回环产物 | 指纹 | 备注 |
+|---|---|---|---|---|---|
+| ★ boss1.json（真实） | 3.8.99 | ✔ | ✔ | ✔ | fps 缺失；mesh 5：hull 5/edges 0 |
+| ★ Box.json（真实） | 4.2.43 | ✔ | ✔ | ✔ | nonessential 齐全（mesh 13 全带 hull+edges，骨头 icon 29） |
+| raptor-pro | 3.8 | ✔ | ✔ | ✔ | 官方导出 edges 13/13（对照组，证明 boss1 edges 缺失是导出选项问题） |
+| spineboy-ess | 3.8 | ✔ | ✔ | ✔ | |
+| celestial-circus-pro | 4.2 | ✔ | ✔ | ✔ | physics 空名时间轴键合法（官方源码实证 constraintName.length>0 才查找） |
+| goblins-pro | 4.2 | ✔ | ✔ | ✔ | 附件显式 name 字段携带皮肤路径前缀（占位键≠真实名的实证） |
+| spineboy-pro | 4.2 | ✔ | ✔ | ✔ | rgba curve 16 元数组合法（4×4 分量 bezier） |
+
+**结论（机器可验证部分）**：0 error。boss1/Box 的回环产物可直接进入官方编辑器
+GUI 实测（A/B/C 路径），产物已随测试包分发（`名字-product.json`）。
+
+**过程中钉死的格式事实（写入 harness 门规则，防回归）**：
+- 附件路径解析：`map.path ?? map.name ?? 占位键`；非 default 皮肤用显式 name
+  前缀（goblin/eyes-closed）指向 atlas 区名；
+- linkedmesh 父附件：在 `map.skin ?? default` 皮肤、同槽位、按**占位键**查找；
+- 4.2 curve 数组 = 4×分量数（rgba 16 / rgb 12 / translate 8 / 单分量 4）；
+- physics 动画段允许空名键（作用于全部约束）；
+- mesh 顶点数以 uvs 长度为准（加权网格 vertices 更长，不可比对长度）。
+
+**仍需 GUI 实测的部分**：A/B/C 三路径的实际行为、hash 字段是否被校验、
+boss1 缺 edges 的编辑器表现、Box icon 保留性、数字名树形顺序——
+见 download/import-data-test/README-实测指引.md。

@@ -10,7 +10,9 @@
     "test:a": "node src/harness/roundtrip.mjs --stage a",
     "test:b": "node src/harness/roundtrip.mjs --stage b",
     "test:skel": "node src/harness/skel-roundtrip.mjs",
-    "skel2json": "node src/cli/skel2json.mjs"
+    "skel2json": "node src/cli/skel2json.mjs",
+    "test:importdata": "node src/harness/import-data.mjs",
+    "test:importdata:real": "node src/harness/import-data.mjs --only real -v"
   },
   "devDependencies": {
     "esbuild": "^0.28.2"

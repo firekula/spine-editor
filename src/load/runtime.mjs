@@ -50,6 +50,20 @@ function stubTexture() {
 }
 
 /**
+ * 用官方 runtime 解析 atlas 文本（两版格式差异由 runtime 自己吸收）。
+ * 返回 { pages: [页名], regions: [区名] } —— 区名即 findRegion 的匹配键。
+ */
+export async function parseAtlas(version, atlasText) {
+  const spine = await getRuntime(version);
+  const atlas =
+    version === '3.8' ? new spine.TextureAtlas(atlasText, stubTexture) : new spine.TextureAtlas(atlasText);
+  return {
+    pages: atlas.pages.map((p) => p.name),
+    regions: atlas.regions.map((r) => r.name),
+  };
+}
+
+/**
  * 加载骨架数据（纯数据路径：Atlas 解析 + AtlasAttachmentLoader + SkeletonJson）。
  * @param {'3.8'|'4.2'} version
  * @param {string} jsonText .json 文本
