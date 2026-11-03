@@ -43,9 +43,12 @@ git config core.sshCommand "/home/z/.venv/bin/python /home/z/my-project/download
 git push -u origin dev
 ```
 
-- SSH 私钥位于沙箱 `~/.ssh/id_ed25519`；**沙箱重置会清掉它**，
-  此时 `scripts/gen_ssh_key.py` 重新生成后必须**重新登记公钥**到 GitHub
-  （仓库 Settings → Deploy keys，删旧加新，勾选 Allow write access）。
+- SSH 私钥位于沙箱 `~/.ssh/id_ed25519`；**沙箱重置会清掉它**。
+  根治方案（2026-11-03 起）：密钥对备份在 `download/deploy-key/`
+  （仓库外、download 内，扛重置），`recover.sh` 优先从备份还原 →
+  **公钥只需登记一次**。仅首次（无备份）才需 `gen_ssh_key.py` 生成并登记
+  （仓库 Settings → Deploy keys，删旧加新，勾选 Allow write access）；
+  注意备份目录必须在 git 仓库之外（GitHub push protection 会拦截私钥）。
 - paramiko 丢失时用国内镜像安装（PyPI 直连会超时）：
   `uv pip install paramiko --python /home/z/.venv/bin/python --index-url https://mirrors.aliyun.com/pypi/simple/`
 
@@ -86,3 +89,14 @@ git push -u origin dev
 - 教训：**做完一段工作立刻 checkpoint + push**，不要攒；
 - recover.sh 已升级：恢复后自动 fetch origin 快进（GitHub 远程是权威源，
   bundle 可能落后于已推送的提交）。
+
+## 2026-11-03 第四次重置实录（密钥备份根治）
+
+- 重置再次发生（间隔数日、无任何操作）；嵌套 `.git`、`~/.ssh`、paramiko
+  全被清，`download/` 普通文件（含 bundle、工作区）全部幸存；
+- 此前每次重置都靠 `gen_ssh_key.py` 生成**新**密钥 → 用户去 GitHub 重新
+  登记公钥，来回折腾；本轮根治：
+  - `gen_ssh_key.py` 生成时同步备份到 `download/deploy-key/`；
+  - `recover.sh` 第 4 步优先从备份还原 `~/.ssh/id_ed25519`；
+  - 效果：**公钥仅登记一次**，今后重置自动还原，不再需要人工登记；
+- 代价：本轮仍需登记一次（旧私钥已丢，无法继承）。

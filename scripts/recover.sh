@@ -71,16 +71,29 @@ fi
 
 # ---------- 4) SSH 密钥 ----------
 step "4/4 SSH 密钥"
+# 备份在 download/deploy-key/（仓库外、download 内，扛平台沙箱重置）
+KEY_BACKUP="$PROJ/../deploy-key"
 if [ -f "$HOME/.ssh/id_ed25519" ]; then
   echo "已有密钥（若 GitHub 上登记的就是它，则无需任何操作）："
   cat "$HOME/.ssh/id_ed25519.pub"
+elif [ -f "$KEY_BACKUP/id_ed25519" ]; then
+  # 平台重置清了 ~/.ssh，但 download/ 备份还在 → 直接还原，无需重新登记
+  mkdir -p "$HOME/.ssh"
+  cp "$KEY_BACKUP/id_ed25519"     "$HOME/.ssh/id_ed25519"
+  cp "$KEY_BACKUP/id_ed25519.pub" "$HOME/.ssh/id_ed25519.pub"
+  chmod 600 "$HOME/.ssh/id_ed25519"
+  chmod 644 "$HOME/.ssh/id_ed25519.pub"
+  echo "已从备份还原密钥（$KEY_BACKUP），GitHub 无需重新登记："
+  cat "$HOME/.ssh/id_ed25519.pub"
 else
+  echo "首次运行（无密钥备份）：生成新密钥并写入备份 ..."
   "$VENV_PY" "$PROJ/scripts/gen_ssh_key.py"
   cat <<'TIP'
 
->>> 新密钥已生成，必须把上面打印的公钥重新登记到 GitHub：
+>>> 新密钥已生成，必须把上面打印的公钥登记到 GitHub（理论上仅此一次）：
 >>> 仓库页 Settings → Deploy keys → 删除旧 key → Add deploy key
 >>> （粘贴公钥，勾选 Allow write access）
+>>> 备份已写入 $KEY_BACKUP，今后沙箱重置将自动还原，无需再登记
 TIP
 fi
 
