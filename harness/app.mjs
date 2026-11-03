@@ -101,10 +101,24 @@ async function loadSkeleton({ name, jsonText, atlasText, imageUrlMap }) {
   clearError();
   const { version, full, ast } = detectVersion(jsonText);
   const spine = await getRuntime(version);
+  const prevVersion = state.version;
   state.spine = spine;
   state.version = version;
 
-  if (!state.context) {
+  // context/renderer 是版本绑定对象（3.8/4.2 类不兼容）：
+  // 首次创建；切换版本时必须销毁重建，否则旧对象流入新 runtime 报
+  // "canvas.getContext is not a function"（旧 ManagedWebGLRenderingContext
+  // 被当作 canvas 传进新版本的 GL 构造器）。
+  // 切换时同时释放旧纹理并清空 assets：异步加载窗口内渲染循环拿到
+  // "新 renderer + 旧骨架"组合同样会崩，清空后 frame() 直接跳过。
+  if (!state.context || prevVersion !== version) {
+    if (state.assets) {
+      for (const t of state.assets.textures) t.dispose?.();
+      state.assets = null;
+    }
+    if (state.renderer) {
+      try { state.renderer.dispose(); } catch { /* 旧对象可能已随纹理释放 */ }
+    }
     state.context = new (wgl('ManagedWebGLRenderingContext'))(GL);
     state.renderer = new (wgl('SceneRenderer'))(canvas, state.context, true);
   }
